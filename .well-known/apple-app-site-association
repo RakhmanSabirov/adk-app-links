@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "Q2K2CD8QL8.com.trk.adk",
+        "paths": [
+          "/marketplace-product/*",
+          "/marketplace-epay-processing/*"
+        ]
+      }
+    ]
+  }
+}
