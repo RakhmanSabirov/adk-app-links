@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Открытие ADK App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stores {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .stores h3 {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">📱</div>
+    <h1>Открываем приложение...</h1>
+    <p id="status">Пожалуйста, подождите</p>
+    <div class="spinner" id="spinner"></div>
+
+    <div id="fallback" style="display: none;">
+        <p>Приложение не установлено?</p>
+        <a href="#" class="btn" id="openAppBtn">Открыть приложение</a>
+
+        <div class="stores">
+            <h3>Скачать приложение</h3>
+            <div class="store-buttons">
+                <a href="https://play.google.com/store/apps/details?id=kz.trk.adk" class="btn" target="_blank">
+                    Google Play
+                </a>
+                <a href="https://apps.apple.com/app/idYOUR_APP_ID" class="btn" target="_blank">
+                    App Store
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Получаем параметры из URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const path = window.location.pathname;
+
+    // Определяем тип устройства
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const isAndroid = /android/i.test(userAgent);
+    const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+    // Конфигурация
+    const APP_SCHEME = 'adkapp'; // ваша custom scheme
+    const ANDROID_PACKAGE = 'kz.trk.adk';
+    const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=kz.trk.adk';
+    const APP_STORE_URL = 'https://apps.apple.com/app/idYOUR_APP_ID'; // Замените на свой ID
+
+    // Формируем deep link
+    let deepLink = '';
+
+    if (path.includes('/marketplace-product/')) {
+        const productId = path.split('/marketplace-product/')[1];
+        deepLink = `${APP_SCHEME}://marketplace-product/${productId}`;
+    } else if (path.includes('/marketplace-epay-processing/')) {
+        const paymentId = path.split('/marketplace-epay-processing/')[1];
+        deepLink = `${APP_SCHEME}://marketplace-epay-processing/${paymentId}`;
+    } else {
+        deepLink = `${APP_SCHEME}://`;
+    }
+
+    // Также используем универсальную ссылку для iOS
+    const universalLink = window.location.href;
+
+    // Функция попытки открыть приложение
+    function tryOpenApp() {
+        const startTime = Date.now();
+        let opened = false;
+
+        // Для iOS используем универсальную ссылку
+        if (isIOS) {
+            window.location.href = universalLink;
+
+            // Если через 2 секунды приложение не открылось - показываем fallback
+            setTimeout(() => {
+                if (!opened && Date.now() - startTime < 3000) {
+                    showFallback();
+                }
+            }, 2000);
+        }
+        // Для Android используем intent или custom scheme
+        else if (isAndroid) {
+            // Пробуем через Android Intent
+            const intent = `intent://${path.substring(1)}#Intent;scheme=https;package=${ANDROID_PACKAGE};end`;
+            window.location.href = intent;
+
+            // Fallback на custom scheme
+            setTimeout(() => {
+                if (!opened) {
+                    window.location.href = deepLink;
+                }
+            }, 500);
+
+            // Показываем fallback через 2.5 секунды
+            setTimeout(() => {
+                if (!opened && Date.now() - startTime < 3000) {
+                    showFallback();
+                }
+            }, 2500);
+        }
+        // Для десктопа или других устройств
+        else {
+            setTimeout(() => {
+                showFallback();
+            }, 1000);
+        }
+
+        // Определяем, открылось ли приложение
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                opened = true;
+            }
+        });
+
+        window.addEventListener('blur', () => {
+            opened = true;
+        });
+    }
+
+    // Показываем fallback страницу
+    function showFallback() {
+        document.getElementById('spinner').style.display = 'none';
+        document.getElementById('status').textContent = 'Приложение не открылось автоматически';
+        document.getElementById('fallback').style.display = 'block';
+
+        // Обработчик кнопки "Открыть приложение"
+        document.getElementById('openAppBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isIOS) {
+                window.location.href = universalLink;
+            } else if (isAndroid) {
+                window.location.href = deepLink;
+            } else {
+                alert('Приложение доступно только на iOS и Android');
+            }
+
+            // Через 1.5 секунды предлагаем перейти в сторы
+            setTimeout(() => {
+                const goToStore = confirm('Приложение не установлено? Перейти в магазин приложений?');
+                if (goToStore) {
+                    if (isAndroid) {
+                        window.location.href = GOOGLE_PLAY_URL;
+                    } else if (isIOS) {
+                        window.location.href = APP_STORE_URL;
+                    }
+                }
+            }, 1500);
+        });
+    }
+
+    // Запускаем при загрузке страницы
+    window.addEventListener('load', () => {
+        tryOpenApp();
+    });
+</script>
+</body>
+</html>

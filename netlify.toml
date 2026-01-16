@@ -1,0 +1,39 @@
+# Netlify configuration for ADK App Links
+
+# Редиректы для deep links
+[[redirects]]
+from = "/marketplace-product/*"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/marketplace-epay-processing/*"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+# Обеспечиваем доступность .well-known файлов
+[[headers]]
+for = "/.well-known/*"
+[headers.values]
+Content-Type = "application/json"
+Access-Control-Allow-Origin = "*"
+
+# Настройки кеширования для статических файлов
+[[headers]]
+for = "/*.html"
+[headers.values]
+Cache-Control = "public, max-age=0, must-revalidate"
+
+# Настройки для SPA (если понадобится)
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = false
+
+# Build settings (если используете сборку)
+[build]
+publish = "."
+command = "echo 'No build needed'"
