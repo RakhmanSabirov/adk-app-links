@@ -66,6 +66,9 @@
             font-weight: 600;
             transition: transform 0.2s, box-shadow 0.2s;
             margin: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
 
         .btn:hover {
@@ -117,18 +120,32 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
+        .debug {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            font-size: 12px;
+            text-align: left;
+            color: #666;
+            display: none;
+        }
+
+        .debug.show {
+            display: block;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="logo">📱</div>
-    <h1>Открываем приложение...</h1>
+    <h1 id="title">Открываем приложение...</h1>
     <p id="status">Пожалуйста, подождите</p>
     <div class="spinner" id="spinner"></div>
 
     <div id="fallback" style="display: none;">
-        <p>Приложение не установлено?</p>
-        <a href="#" class="btn" id="openAppBtn">Открыть приложение</a>
+        <button class="btn" id="openAppBtn">Открыть приложение</button>
 
         <div class="stores">
             <h3>Скачать приложение</h3>
@@ -142,129 +159,191 @@
             </div>
         </div>
     </div>
+
+    <div id="debug" class="debug">
+        <strong>Debug Info:</strong><br>
+        <div id="debugContent"></div>
+    </div>
 </div>
 
 <script>
+    // Debug режим
+    const DEBUG = true;
+
+    function debug(msg) {
+        if (DEBUG) {
+            console.log(msg);
+            const debugDiv = document.getElementById('debugContent');
+            debugDiv.innerHTML += msg + '<br>';
+            document.getElementById('debug').classList.add('show');
+        }
+    }
+
     // Получаем параметры из URL
-    const urlParams = new URLSearchParams(window.location.search);
     const path = window.location.pathname;
+    const searchParams = new URLSearchParams(window.location.search);
+
+    debug('Path: ' + path);
+    debug('Search: ' + window.location.search);
 
     // Определяем тип устройства
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     const isAndroid = /android/i.test(userAgent);
     const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+    const isMobile = isAndroid || isIOS;
+
+    debug('Android: ' + isAndroid);
+    debug('iOS: ' + isIOS);
+    debug('Mobile: ' + isMobile);
 
     // Конфигурация
-    const APP_SCHEME = 'adkapp'; // ваша custom scheme
     const ANDROID_PACKAGE = 'kz.trk.adk';
-    const GOOGLE_PLAY_URL = 'https://play.google.com/store/apps/details?id=kz.trk.adk';
-    const APP_STORE_URL = 'https://apps.apple.com/app/idYOUR_APP_ID'; // Замените на свой ID
+    const IOS_APP_ID = 'YOUR_APP_ID'; // Замените!
+    const CUSTOM_SCHEME = 'adkapp';
 
-    // Формируем deep link
-    let deepLink = '';
+    // Извлекаем ID из пути
+    let deepLinkPath = '';
+    let productId = '';
 
     if (path.includes('/marketplace-product/')) {
-        const productId = path.split('/marketplace-product/')[1];
-        deepLink = `${APP_SCHEME}://marketplace-product/${productId}`;
+        productId = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-product/${productId}`;
+        debug('Product ID: ' + productId);
     } else if (path.includes('/marketplace-epay-processing/')) {
-        const paymentId = path.split('/marketplace-epay-processing/')[1];
-        deepLink = `${APP_SCHEME}://marketplace-epay-processing/${paymentId}`;
-    } else {
-        deepLink = `${APP_SCHEME}://`;
+        const paymentId = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-epay-processing/${paymentId}`;
+        debug('Payment ID: ' + paymentId);
     }
 
-    // Также используем универсальную ссылку для iOS
-    const universalLink = window.location.href;
+    // Формируем различные варианты ссылок
+    const customSchemeLink = `${CUSTOM_SCHEME}://${deepLinkPath}`;
+    const httpsLink = `https://adk-app.netlify.app/${deepLinkPath}`;
 
-    // Функция попытки открыть приложение
-    function tryOpenApp() {
-        const startTime = Date.now();
-        let opened = false;
+    debug('Custom Scheme: ' + customSchemeLink);
+    debug('HTTPS Link: ' + httpsLink);
 
-        // Для iOS используем универсальную ссылку
-        if (isIOS) {
-            window.location.href = universalLink;
+    let appOpened = false;
+    let attemptCount = 0;
 
-            // Если через 2 секунды приложение не открылось - показываем fallback
+    // Функция для Android
+    function tryOpenAndroid() {
+        debug('Trying Android method ' + (++attemptCount));
+
+        if (attemptCount === 1) {
+            // Попытка 1: Android Intent (самый надежный для установленных приложений)
+            const intentUrl = `intent://${deepLinkPath}#Intent;scheme=https;package=${ANDROID_PACKAGE};end`;
+            debug('Intent URL: ' + intentUrl);
+            window.location.href = intentUrl;
+
             setTimeout(() => {
-                if (!opened && Date.now() - startTime < 3000) {
-                    showFallback();
-                }
-            }, 2000);
+                if (!appOpened) tryOpenAndroid();
+            }, 800);
         }
-        // Для Android используем intent или custom scheme
-        else if (isAndroid) {
-            // Пробуем через Android Intent
-            const intent = `intent://${path.substring(1)}#Intent;scheme=https;package=${ANDROID_PACKAGE};end`;
-            window.location.href = intent;
+        else if (attemptCount === 2) {
+            // Попытка 2: Custom Scheme (fallback)
+            debug('Custom Scheme: ' + customSchemeLink);
+            window.location.href = customSchemeLink;
 
-            // Fallback на custom scheme
             setTimeout(() => {
-                if (!opened) {
-                    window.location.href = deepLink;
-                }
-            }, 500);
-
-            // Показываем fallback через 2.5 секунды
-            setTimeout(() => {
-                if (!opened && Date.now() - startTime < 3000) {
-                    showFallback();
-                }
-            }, 2500);
+                if (!appOpened) tryOpenAndroid();
+            }, 800);
         }
-        // Для десктопа или других устройств
-        else {
-            setTimeout(() => {
-                showFallback();
-            }, 1000);
-        }
+        else if (attemptCount === 3) {
+            // Попытка 3: HTTPS deep link
+            debug('HTTPS: ' + httpsLink);
+            window.location.href = httpsLink;
 
-        // Определяем, открылось ли приложение
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                opened = true;
+            setTimeout(() => {
+                if (!appOpened) showFallback();
+            }, 1500);
+        }
+    }
+
+    // Функция для iOS
+    function tryOpenIOS() {
+        debug('Trying iOS Universal Link');
+
+        // iOS: Сразу пробуем Universal Link
+        window.location.href = httpsLink;
+
+        setTimeout(() => {
+            if (!appOpened) {
+                debug('Trying iOS Custom Scheme');
+                window.location.href = customSchemeLink;
             }
-        });
+        }, 1000);
 
-        window.addEventListener('blur', () => {
-            opened = true;
-        });
+        setTimeout(() => {
+            if (!appOpened) showFallback();
+        }, 2500);
     }
 
     // Показываем fallback страницу
     function showFallback() {
+        debug('Showing fallback');
+        appOpened = true; // Предотвращаем дальнейшие попытки
+
         document.getElementById('spinner').style.display = 'none';
-        document.getElementById('status').textContent = 'Приложение не открылось автоматически';
+        document.getElementById('title').textContent = 'Откройте приложение';
+        document.getElementById('status').textContent = 'Нажмите кнопку ниже, чтобы открыть приложение';
         document.getElementById('fallback').style.display = 'block';
-
-        // Обработчик кнопки "Открыть приложение"
-        document.getElementById('openAppBtn').addEventListener('click', (e) => {
-            e.preventDefault();
-            if (isIOS) {
-                window.location.href = universalLink;
-            } else if (isAndroid) {
-                window.location.href = deepLink;
-            } else {
-                alert('Приложение доступно только на iOS и Android');
-            }
-
-            // Через 1.5 секунды предлагаем перейти в сторы
-            setTimeout(() => {
-                const goToStore = confirm('Приложение не установлено? Перейти в магазин приложений?');
-                if (goToStore) {
-                    if (isAndroid) {
-                        window.location.href = GOOGLE_PLAY_URL;
-                    } else if (isIOS) {
-                        window.location.href = APP_STORE_URL;
-                    }
-                }
-            }, 1500);
-        });
     }
 
-    // Запускаем при загрузке страницы
+    // Обработчик кнопки "Открыть приложение"
+    document.getElementById('openAppBtn').addEventListener('click', () => {
+        debug('Manual open clicked');
+
+        if (isAndroid) {
+            // Для Android сначала Intent, потом Custom Scheme
+            const intentUrl = `intent://${deepLinkPath}#Intent;scheme=https;package=${ANDROID_PACKAGE};end`;
+            window.location.href = intentUrl;
+
+            setTimeout(() => {
+                window.location.href = customSchemeLink;
+            }, 500);
+        } else if (isIOS) {
+            window.location.href = customSchemeLink;
+        } else {
+            alert('Приложение доступно только на iOS и Android');
+        }
+    });
+
+    // Определяем, открылось ли приложение
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            debug('Page hidden - app likely opened');
+            appOpened = true;
+        }
+    });
+
+    window.addEventListener('blur', () => {
+        debug('Window blur - app likely opened');
+        appOpened = true;
+    });
+
+    window.addEventListener('pagehide', () => {
+        debug('Page hide - app likely opened');
+        appOpened = true;
+    });
+
+    // Основная логика запуска
     window.addEventListener('load', () => {
-        tryOpenApp();
+        debug('Page loaded, starting...');
+
+        // Небольшая задержка для инициализации
+        setTimeout(() => {
+            if (isAndroid) {
+                tryOpenAndroid();
+            } else if (isIOS) {
+                tryOpenIOS();
+            } else {
+                // Desktop
+                debug('Desktop detected');
+                document.getElementById('title').textContent = 'Мобильное приложение';
+                document.getElementById('status').textContent = 'Отсканируйте QR-код или откройте на мобильном устройстве';
+                showFallback();
+            }
+        }, 300);
     });
 </script>
 </body>
