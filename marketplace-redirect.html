@@ -65,22 +65,27 @@
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     let deepLinkPath = '';
+    let host = 'adk-app.netlify.app'; // дефолтный хост
+
     if (path.includes('/marketplace-product/')) {
         const productId = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
         deepLinkPath = `marketplace-product/${productId}`;
+        host = 'adk-app.netlify.app';
     } else if (path.includes('/marketplace-epay-processing/')) {
         const paymentId = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
         deepLinkPath = `marketplace-epay-processing/${paymentId}`;
+        host = 'adk.app'; // см. второй intent-filter в манифесте
     }
 
-    // ВАЖНО — исправлено
+    // iOS custom-scheme
     const customSchemeLink = deepLinkPath
         ? `adk:/${deepLinkPath}`
         : `adk:/`;
 
+    // ANDROID: правильный intent с хостом
     const intentUrl = deepLinkPath
-        ? `intent://${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
-        : `intent://#Intent;scheme=https;package=kz.trk.adk;end`;
+        ? `intent://${host}/${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
+        : `intent://${host}#Intent;scheme=https;package=kz.trk.adk;end`;
 
     function openApp() {
         if (isAndroid) {
@@ -97,5 +102,6 @@
         if (isAndroid) openApp();
     };
 </script>
+
 </body>
 </html>
