@@ -71,34 +71,37 @@
         deepLinkPath = `marketplace-epay-processing/${paymentId}`;
     }
 
-    const customSchemeLink = `adkapp://${deepLinkPath}`;
-    const intentUrl = `intent://${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`;
+    // если путь не распарсили — открываем просто приложение
+    const customSchemeLink = deepLinkPath
+        ? `adkapp://${deepLinkPath}`
+        : `adkapp://`;
+
+    const intentUrl = deepLinkPath
+        ? `intent://${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
+        : `intent://#Intent;scheme=https;package=kz.trk.adk;end`;
 
     function openApp() {
         if (isAndroid) {
-            window.location.href = intentUrl; // Android Intent
+            // Android — сразу Intent
+            window.location.href = intentUrl;
         } else if (isIOS) {
-            // Для iOS пробуем открыть через custom scheme
-            const now = Date.now();
-            const timeout = setTimeout(() => {
-                // fallback через кнопку если приложение не установлено
-                document.getElementById('openAppBtn').style.display = 'block';
-            }, 1500); // если app не откроется за 1.5 сек — показать кнопку
-
-            // скрываем кнопку сразу
-            document.getElementById('openAppBtn').style.display = 'none';
-
-            // пробуем открыть
-            window.location = customSchemeLink;
-
-            // если через 1.5 сек не сработало — кнопка уже показана
+            // iOS — только по клику, чтобы не ловить лишнюю ошибку в Safari.
+            // Здесь важно, чтобы в Info.plist была схема adkapp.
+            window.location.href = customSchemeLink;
         }
     }
 
     document.getElementById('openAppBtn').addEventListener('click', openApp);
 
-    // Авто-запуск при загрузке
-    window.onload = openApp;
+    // Авто-запуск только для Android
+    window.onload = function () {
+        if (isAndroid) {
+            openApp();
+        }
+        // для iOS полагаемся на:
+        // 1) верхний баннер "Открыть в приложении ADK" (universal link)
+        // 2) кнопку "Открыть приложение"
+    };
 </script>
 </body>
 </html>
