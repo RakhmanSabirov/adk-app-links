@@ -61,7 +61,6 @@
     const isAndroid = /android/i.test(navigator.userAgent);
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    // Определяем путь deep link
     let deepLinkPath = '';
     if (path.includes('/marketplace-product/')) {
         const productId = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
@@ -71,10 +70,10 @@
         deepLinkPath = `marketplace-epay-processing/${paymentId}`;
     }
 
-    // если путь не распарсили — открываем просто приложение
+    // ВАЖНО — исправлено
     const customSchemeLink = deepLinkPath
-        ? `adkapp://${deepLinkPath}`
-        : `adkapp://`;
+        ? `adk://${deepLinkPath}`
+        : `adk://`;
 
     const intentUrl = deepLinkPath
         ? `intent://${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
@@ -82,25 +81,17 @@
 
     function openApp() {
         if (isAndroid) {
-            // Android — сразу Intent
             window.location.href = intentUrl;
         } else if (isIOS) {
-            // iOS — только по клику, чтобы не ловить лишнюю ошибку в Safari.
-            // Здесь важно, чтобы в Info.plist была схема adkapp.
             window.location.href = customSchemeLink;
         }
     }
 
     document.getElementById('openAppBtn').addEventListener('click', openApp);
 
-    // Авто-запуск только для Android
-    window.onload = function () {
-        if (isAndroid) {
-            openApp();
-        }
-        // для iOS полагаемся на:
-        // 1) верхний баннер "Открыть в приложении ADK" (universal link)
-        // 2) кнопку "Открыть приложение"
+    // Android — автооткрытие
+    window.onload = () => {
+        if (isAndroid) openApp();
     };
 </script>
 </body>
