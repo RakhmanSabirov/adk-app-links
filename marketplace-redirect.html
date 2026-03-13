@@ -112,7 +112,14 @@
         if (isAndroid) {
             window.location.href = intentUrl;
         } else if (isIOS) {
-            window.location.href = customSchemeLink;
+            // iframe trick — обходит блокировку кастомных схем в Instagram/TikTok браузерах
+            var iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.src = customSchemeLink;
+            document.body.appendChild(iframe);
+            setTimeout(function() {
+                document.body.removeChild(iframe);
+            }, 500);
         }
     }
 
