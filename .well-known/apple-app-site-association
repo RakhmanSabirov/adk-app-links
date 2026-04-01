@@ -6,7 +6,12 @@
         "appID": "Q2K2CD8QL8.com.trk.adk",
         "paths": [
           "/marketplace-product/*",
-          "/marketplace-epay-processing/*"
+          "/marketplace-epay-processing/*",
+          "/marketplace-category/*",
+          "/marketplace-promotion/*",
+          "/marketplace-promo",
+          "/marketplace-popular",
+          "/marketplace-recommendation"
         ]
       }
     ]
