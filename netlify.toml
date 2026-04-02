@@ -12,6 +12,35 @@ from = "/marketplace-epay-processing/*"
 to = "/marketplace-redirect.html"
 status = 200
 force = true
+[[redirects]]
+from = "/marketplace-category/*"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/marketplace-promotion/*"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/marketplace-promo"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/marketplace-popular"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/marketplace-recommendation"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
 
 # Обеспечиваем доступность .well-known файлов
 [[headers]]
