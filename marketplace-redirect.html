@@ -179,10 +179,16 @@
             if (isAndroid) {
                 window.location.href = intentUrl;
             } else if (isIOS) {
-                // Universal Link — работает даже в Instagram/TikTok браузерах
-                window.location.href = universalLink;
+                // Создаём временную ссылку и кликаем по ней — обходит блокировку in-app браузеров
+                const a = document.createElement('a');
+                a.href = universalLink;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
             }
         }
+
 
         document.getElementById('openAppBtn').addEventListener('click', openApp);
 
