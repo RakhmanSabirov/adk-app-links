@@ -125,6 +125,13 @@
 
         <button class="btn" id="openAppBtn">Открыть приложение</button>
 
+        <!-- Подсказка для iOS in-app браузера -->
+        <div id="safari-hint"
+            style="display:none; margin-top:15px; padding:15px; background:#fff3cd; border-radius:10px; color:#856404; font-size:14px; line-height:1.6;">
+            Нажмите <b>···</b> (три точки) вверху → <b>«Открыть в браузере»</b> → затем приложение откроется
+            автоматически
+        </div>
+
         <div class="stores">
             <h3>Нет приложения?</h3>
             <div class="store-buttons">
@@ -174,27 +181,37 @@
         const intentUrl = deepLinkPath
             ? `intent://${host}/${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
             : `intent://${host}#Intent;scheme=https;package=kz.trk.adk;end`;
+        const isInstagram = /Instagram/i.test(navigator.userAgent);
+        const isTelegram = /Telegram/i.test(navigator.userAgent);
+        const isInAppBrowser = isInstagram || isTelegram;
 
         function openApp() {
             if (isAndroid) {
                 window.location.href = intentUrl;
             } else if (isIOS) {
-                // Создаём временную ссылку и кликаем по ней — обходит блокировку in-app браузеров
-                const a = document.createElement('a');
-                a.href = universalLink;
-                a.target = '_blank';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+                if (isInAppBrowser) {
+                    // Показываем подсказку
+                    document.getElementById('safari-hint').style.display = 'block';
+                } else {
+                    // В Safari Universal Link работает
+                    window.location.href = universalLink;
+                }
             }
         }
+
 
 
         document.getElementById('openAppBtn').addEventListener('click', openApp);
 
         window.onload = () => {
-            if (isAndroid) openApp();
+            if (isAndroid) {
+                openApp();
+            } else if (isIOS && isInAppBrowser) {
+                // Сразу показываем подсказку
+                document.getElementById('safari-hint').style.display = 'block';
+            }
         };
+
 
     </script>
 
