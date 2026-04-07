@@ -1,135 +1,197 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Открыть ADK App</title>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display:flex; justify-content:center; align-items:center; min-height:100vh; padding:20px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
         .container {
-            background:white; border-radius:20px; padding:40px;
-            max-width:400px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.3);
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         /* ЛОГО */
         .logo {
-            width:100px;
-            height:100px;
-            margin:0 auto 20px;
-            border-radius:20px;
-            overflow:hidden;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            background:white;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
         }
 
         .logo img {
-            width:100%;
-            height:100%;
-            object-fit:contain;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
-        h1 { font-size:24px; margin-bottom:10px; color:#333; }
-        p { color:#666; margin-bottom:30px; line-height:1.6; }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
 
         .btn {
-            display:inline-block; padding:15px 30px; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-            color:white; text-decoration:none; border-radius:10px; font-weight:600;
-            transition: transform 0.2s, box-shadow 0.2s; margin:5px; border:none; cursor:pointer;
-            font-size:16px; width:100%;
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
         }
-        .btn:hover { transform:translateY(-2px); box-shadow:0 10px 20px rgba(102,126,234,0.4); }
 
-        .stores { margin-top:30px; padding-top:30px; border-top:1px solid #eee; }
-        .stores h3 { font-size:14px; color:#999; margin-bottom:15px; text-transform:uppercase; letter-spacing:1px; }
-        .store-buttons { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
-        .store-btn { flex:1; min-width:140px; }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .stores {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #eee;
+        }
+
+        .stores h3 {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .store-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .store-btn {
+            flex: 1;
+            min-width: 140px;
+        }
     </style>
 </head>
+
 <body>
-<div class="container">
+    <div class="container">
 
-    <!-- ЛОГО -->
-    <div class="logo">
-        <img src="/adk.png" alt="ADK Logo">
-    </div>
+        <!-- ЛОГО -->
+        <div class="logo">
+            <img src="/adk.png" alt="ADK Logo">
+        </div>
 
-    <h1>ADK Marketplace</h1>
-    <p>Откройте приложение для покупок</p>
+        <h1>ADK Marketplace</h1>
+        <p>Откройте приложение для покупок</p>
 
-    <button class="btn" id="openAppBtn">Открыть приложение</button>
+        <button class="btn" id="openAppBtn">Открыть приложение</button>
 
-    <div class="stores">
-        <h3>Нет приложения?</h3>
-        <div class="store-buttons">
-            <a href="https://play.google.com/store/apps/details?id=kz.trk.adk" class="btn store-btn" target="_blank">
-                📲 Google Play
-            </a>
-            <a href="itms-apps://apps.apple.com/kz/app/id1614398205"
-               class="btn store-btn"
-               target="_blank">
-                🍎 App Store
-            </a>
+        <div class="stores">
+            <h3>Нет приложения?</h3>
+            <div class="store-buttons">
+                <a href="https://play.google.com/store/apps/details?id=kz.trk.adk" class="btn store-btn"
+                    target="_blank">
+                    📲 Google Play
+                </a>
+                <a href="itms-apps://apps.apple.com/kz/app/id1614398205" class="btn store-btn" target="_blank">
+                    🍎 App Store
+                </a>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const path = window.location.pathname;
-    const isAndroid = /android/i.test(navigator.userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    <script>
+        const path = window.location.pathname;
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    let deepLinkPath = '';
-    let host = 'adk-app.netlify.app'; // дефолтный хост
+        let deepLinkPath = '';
+        const host = 'adk-app.netlify.app';
 
-    if (path.includes('/marketplace-product/')) {
-        const productId = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
-        deepLinkPath = `marketplace-product/${productId}`;
-        host = 'adk-app.netlify.app';
-    } else if (path.includes('/marketplace-epay-processing/')) {
-        const paymentId = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
-        deepLinkPath = `marketplace-epay-processing/${paymentId}`;
-        host = 'adk.app'; // см. второй intent-filter в манифесте
-    }
-
-    // iOS custom-scheme
-    const customSchemeLink = deepLinkPath
-        ? `adk:/${deepLinkPath}`
-        : `adk:/`;
-
-    // ANDROID: правильный intent с хостом
-    const intentUrl = deepLinkPath
-        ? `intent://${host}/${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
-        : `intent://${host}#Intent;scheme=https;package=kz.trk.adk;end`;
-
-    function openApp() {
-        if (isAndroid) {
-            window.location.href = intentUrl;
-        } else if (isIOS) {
-            // iframe trick — обходит блокировку кастомных схем в Instagram/TikTok браузерах
-            var iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = customSchemeLink;
-            document.body.appendChild(iframe);
-            setTimeout(function() {
-                document.body.removeChild(iframe);
-            }, 500);
+        if (path.includes('/marketplace-product/')) {
+            const id = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
+            deepLinkPath = `marketplace-product/${id}`;
+        } else if (path.includes('/marketplace-epay-processing/')) {
+            const id = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
+            deepLinkPath = `marketplace-epay-processing/${id}`;
+        } else if (path.includes('/marketplace-category/')) {
+            const id = path.split('/marketplace-category/')[1].split('/')[0].split('?')[0];
+            deepLinkPath = `marketplace-category/${id}`;
+        } else if (path.includes('/marketplace-promotion/')) {
+            const id = path.split('/marketplace-promotion/')[1].split('/')[0].split('?')[0];
+            deepLinkPath = `marketplace-promotion/${id}`;
+        } else if (path.includes('/marketplace-promo')) {
+            deepLinkPath = 'marketplace-promo';
+        } else if (path.includes('/marketplace-popular')) {
+            deepLinkPath = 'marketplace-popular';
+        } else if (path.includes('/marketplace-recommendation')) {
+            deepLinkPath = 'marketplace-recommendation';
         }
-    }
 
-    document.getElementById('openAppBtn').addEventListener('click', openApp);
+        const universalLink = deepLinkPath
+            ? `https://${host}/${deepLinkPath}`
+            : `https://${host}`;
 
-    // Android — автооткрытие
-    window.onload = () => {
-        if (isAndroid) openApp();
-    };
-</script>
+        const intentUrl = deepLinkPath
+            ? `intent://${host}/${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
+            : `intent://${host}#Intent;scheme=https;package=kz.trk.adk;end`;
+
+        function openApp() {
+            if (isAndroid) {
+                window.location.href = intentUrl;
+            } else if (isIOS) {
+                // Universal Link — работает даже в Instagram/TikTok браузерах
+                window.location.href = universalLink;
+            }
+        }
+
+        document.getElementById('openAppBtn').addEventListener('click', openApp);
+
+        window.onload = () => {
+            if (isAndroid) openApp();
+        };
+
+    </script>
 
 </body>
+
 </html>
