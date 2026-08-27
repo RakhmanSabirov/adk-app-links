@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
     <title>Открыть ADK App</title>
     <style>
         * {
@@ -144,12 +146,12 @@
             </a>
         </div>
     </div>
-</div>
+    [27.08.2026 12:14] Raha SA: </div>
 
 <script>
     const path = window.location.pathname;
     const isAndroid = /android/i.test(navigator.userAgent);
-[27.08.2026 12:00] Raha SA: const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     let deepLinkPath = '';
     const host = 'adk-app.netlify.app';
@@ -218,21 +220,38 @@
 
     document.getElementById('openAppBtn').addEventListener('click', openApp);
 
-    // Автозапуск: без кликов и БЕЗ ожидания загрузки картинок
-    // (window.onload ждёт /adk.png и мог подвисать). Скрипт стоит в конце
-    // body, поэтому DOM уже готов — запускаем сразу.
+    // ВРЕМЕННАЯ ДИАГНОСТИКА — показывает, что телефон определил.
+    // Если редирект сработает, страница уйдёт и этот блок не успеешь увидеть.
+    // Если НЕ сработает — блок останется на экране, сделай скрин и пришли.
+    try {
+        var dbg = document.createElement('pre');
+        dbg.style.cssText =
+[27.08.2026 12:14] Raha SA: 'font-size:11px;text-align:left;white-space:pre-wrap;word-break:break-all;background:#111;color:#0f0;padding:10px;border-radius:8px;margin-top:16px;';
+        dbg.textContent =
+            'path=' + path + '\n' +
+            'deepLinkPath=' + deepLinkPath + '\n' +
+            'isIOS=' + isIOS + '  isAndroid=' + isAndroid + '\n' +
+            'inApp=' + isInAppBrowser + '\n' +
+            'APPSTORE=' + APPSTORE + '\n' +
+            'UA=' + navigator.userAgent;
+        document.querySelector('.container').appendChild(dbg);
+    } catch (e) {}
+
+    // Автозапуск: без кликов и БЕЗ ожидания загрузки картинок.
+    // Даём 2 сек, чтобы диагностика успела отрисоваться, затем редирект.
     (function autoRedirect() {
+        var target = null;
         if (isAndroid) {
-            // Открывает приложение, либо browser_fallback_url уводит в Google Play.
-            window.location.href = intentUrl;
+            target = intentUrl;
         } else if (isIOS) {
             if (isInAppBrowser) {
                 document.getElementById('safari-hint').style.display = 'block';
             } else {
-[27.08.2026 12:00] Raha SA: // Приложение есть → universal link перехватил ссылку до
-                // загрузки страницы. Раз мы здесь — приложения нет → App Store.
-                window.location.href = APPSTORE;
+                target = APPSTORE;
             }
+        }
+        if (target) {
+            setTimeout(function () { window.location.href = target; }, 2000);
         }
     })();
 
