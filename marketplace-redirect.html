@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -31,6 +32,7 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
+        /* ЛОГО */
         .logo {
             width: 100px;
             height: 100px;
@@ -112,6 +114,8 @@
 
 <body>
 <div class="container">
+
+    <!-- ЛОГО -->
     <div class="logo">
         <img src="/adk.png" alt="ADK Logo">
     </div>
@@ -121,6 +125,7 @@
 
     <button class="btn" id="openAppBtn">Открыть приложение</button>
 
+    <!-- Подсказка для iOS in-app браузера -->
     <div id="safari-hint"
          style="display:none; margin-top:15px; padding:15px; background:#fff3cd; border-radius:10px; color:#856404; font-size:14px; line-height:1.6;">
         Нажмите <b>···</b> (три точки) вверху → <b>«Открыть в браузере»</b> → затем приложение откроется
@@ -144,8 +149,9 @@
 <script>
     const path = window.location.pathname;
     const isAndroid = /android/i.test(navigator.userAgent);
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-[27.08.2026 11:50] Raha SA: let deepLinkPath = '';
+[27.08.2026 12:00] Raha SA: const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    let deepLinkPath = '';
     const host = 'adk-app.netlify.app';
 
     if (path.includes('/marketplace-product/')) {
@@ -170,15 +176,19 @@
         deepLinkPath = 'delivery';
     }
 
-    // itms-apps:// открывает App Store напрямую (https иногда падает в Safari).
-    const APPSTORE = 'itms-apps://apps.apple.com/kz/app/id1614398205';
+    // Ссылки на магазины (фолбэк, если приложения нет).
+    // ВАЖНО: для АВТО-редиректа (без клика) нужен https:// — iOS блокирует
+    // авто-переход на itms-apps:// без жеста пользователя. https iOS пускает
+    // сам и открывает App Store.
+    const APPSTORE = 'https://apps.apple.com/kz/app/id1614398205';
     const GOOGLEPLAY = 'https://play.google.com/store/apps/details?id=kz.trk.adk';
 
     const universalLink = deepLinkPath
         ? `https://${host}/${deepLinkPath}`
         : `https://${host}`;
 
-    // Android intent с авто-фолбэком в Google Play.
+    // Android intent с авто-фолбэком в Google Play: есть приложение —
+    // откроется оно, нет — система сама уведёт в стор (browser_fallback_url).
     const intentBase = deepLinkPath ? `${host}/${deepLinkPath}` : host;
     const intentUrl =
         `intent://${intentBase}#Intent;scheme=https;package=kz.trk.adk;` +
@@ -190,11 +200,17 @@
 
     function openApp() {
         if (isAndroid) {
+            // Открывает приложение, либо сам уходит в Google Play.
             window.location.href = intentUrl;
         } else if (isIOS) {
             if (isInAppBrowser) {
+                // В in-app браузере (Instagram/Telegram) universal link не
+                // работает — просим открыть в Safari.
                 document.getElementById('safari-hint').style.display = 'block';
             } else {
+                // Приложение установлено → universal link перехватил ссылку
+                // ещё до загрузки страницы. Раз мы здесь — приложения нет,
+                // уводим в App Store.
                 window.location.href = APPSTORE;
             }
         }
@@ -202,18 +218,25 @@
 
     document.getElementById('openAppBtn').addEventListener('click', openApp);
 
-    // Автозапуск сразу (без ожидания загрузки картинок). Скрипт в конце body — DOM готов.
+    // Автозапуск: без кликов и БЕЗ ожидания загрузки картинок
+    // (window.onload ждёт /adk.png и мог подвисать). Скрипт стоит в конце
+    // body, поэтому DOM уже готов — запускаем сразу.
     (function autoRedirect() {
         if (isAndroid) {
+            // Открывает приложение, либо browser_fallback_url уводит в Google Play.
             window.location.href = intentUrl;
         } else if (isIOS) {
             if (isInAppBrowser) {
                 document.getElementById('safari-hint').style.display = 'block';
             } else {
+[27.08.2026 12:00] Raha SA: // Приложение есть → universal link перехватил ссылку до
+                // загрузки страницы. Раз мы здесь — приложения нет → App Store.
                 window.location.href = APPSTORE;
             }
         }
     })();
+
+
 </script>
 
 </body>
