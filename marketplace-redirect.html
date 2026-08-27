@@ -113,107 +113,125 @@
 </head>
 
 <body>
-    <div class="container">
+<div class="container">
 
-        <!-- ЛОГО -->
-        <div class="logo">
-            <img src="/adk.png" alt="ADK Logo">
-        </div>
-
-        <h1>ADK Marketplace</h1>
-        <p>Откройте приложение для покупок</p>
-
-        <button class="btn" id="openAppBtn">Открыть приложение</button>
-
-        <!-- Подсказка для iOS in-app браузера -->
-        <div id="safari-hint"
-            style="display:none; margin-top:15px; padding:15px; background:#fff3cd; border-radius:10px; color:#856404; font-size:14px; line-height:1.6;">
-            Нажмите <b>···</b> (три точки) вверху → <b>«Открыть в браузере»</b> → затем приложение откроется
-            автоматически
-        </div>
-
-        <div class="stores">
-            <h3>Нет приложения?</h3>
-            <div class="store-buttons">
-                <a href="https://play.google.com/store/apps/details?id=kz.trk.adk" class="btn store-btn"
-                    target="_blank">
-                    📲 Google Play
-                </a>
-                <a href="itms-apps://apps.apple.com/kz/app/id1614398205" class="btn store-btn" target="_blank">
-                    🍎 App Store
-                </a>
-            </div>
-        </div>
+    <!-- ЛОГО -->
+    <div class="logo">
+        <img src="/adk.png" alt="ADK Logo">
     </div>
 
-    <script>
-        const path = window.location.pathname;
-        const isAndroid = /android/i.test(navigator.userAgent);
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    <h1>ADK Marketplace</h1>
+    <p>Откройте приложение для покупок</p>
 
-        let deepLinkPath = '';
-        const host = 'adk-app.netlify.app';
+    <button class="btn" id="openAppBtn">Открыть приложение</button>
 
-        if (path.includes('/marketplace-product/')) {
-            const id = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
-            deepLinkPath = `marketplace-product/${id}`;
-        } else if (path.includes('/marketplace-epay-processing/')) {
-            const id = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
-            deepLinkPath = `marketplace-epay-processing/${id}`;
-        } else if (path.includes('/marketplace-category/')) {
-            const id = path.split('/marketplace-category/')[1].split('/')[0].split('?')[0];
-            deepLinkPath = `marketplace-category/${id}`;
-        } else if (path.includes('/marketplace-promotion/')) {
-            const id = path.split('/marketplace-promotion/')[1].split('/')[0].split('?')[0];
-            deepLinkPath = `marketplace-promotion/${id}`;
-        } else if (path.includes('/marketplace-promo')) {
-            deepLinkPath = 'marketplace-promo';
-        } else if (path.includes('/marketplace-popular')) {
-            deepLinkPath = 'marketplace-popular';
-        } else if (path.includes('/marketplace-recommendation')) {
-            deepLinkPath = 'marketplace-recommendation';
-        }
+    <!-- Подсказка для iOS in-app браузера -->
+    <div id="safari-hint"
+         style="display:none; margin-top:15px; padding:15px; background:#fff3cd; border-radius:10px; color:#856404; font-size:14px; line-height:1.6;">
+        Нажмите <b>···</b> (три точки) вверху → <b>«Открыть в браузере»</b> → затем приложение откроется
+        автоматически
+    </div>
 
-        const universalLink = deepLinkPath
-            ? `https://${host}/${deepLinkPath}`
-            : `https://${host}`;
+    <div class="stores">
+        <h3>Нет приложения?</h3>
+        <div class="store-buttons">
+            <a href="https://play.google.com/store/apps/details?id=kz.trk.adk" class="btn store-btn"
+               target="_blank">
+                📲 Google Play
+            </a>
+            <a href="itms-apps://apps.apple.com/kz/app/id1614398205" class="btn store-btn" target="_blank">
+                🍎 App Store
+            </a>
+        </div>
+    </div>
+</div>
 
-        const intentUrl = deepLinkPath
-            ? `intent://${host}/${deepLinkPath}#Intent;scheme=https;package=kz.trk.adk;end`
-            : `intent://${host}#Intent;scheme=https;package=kz.trk.adk;end`;
-        const isInstagram = /Instagram/i.test(navigator.userAgent);
-        const isTelegram = /Telegram/i.test(navigator.userAgent);
-        const isInAppBrowser = isInstagram || isTelegram;
+<script>
+    const path = window.location.pathname;
+    const isAndroid = /android/i.test(navigator.userAgent);
+[27.08.2026 11:29] Raha SA: const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-        function openApp() {
-            if (isAndroid) {
-                window.location.href = intentUrl;
-            } else if (isIOS) {
-                if (isInAppBrowser) {
-                    // Показываем подсказку
-                    document.getElementById('safari-hint').style.display = 'block';
-                } else {
-                    // В Safari Universal Link работает
-                    window.location.href = universalLink;
-                }
-            }
-        }
+    let deepLinkPath = '';
+    const host = 'adk-app.netlify.app';
 
+    if (path.includes('/marketplace-product/')) {
+        const id = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-product/${id}`;
+    } else if (path.includes('/marketplace-epay-processing/')) {
+        const id = path.split('/marketplace-epay-processing/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-epay-processing/${id}`;
+    } else if (path.includes('/marketplace-category/')) {
+        const id = path.split('/marketplace-category/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-category/${id}`;
+    } else if (path.includes('/marketplace-promotion/')) {
+        const id = path.split('/marketplace-promotion/')[1].split('/')[0].split('?')[0];
+        deepLinkPath = `marketplace-promotion/${id}`;
+    } else if (path.includes('/marketplace-promo')) {
+        deepLinkPath = 'marketplace-promo';
+    } else if (path.includes('/marketplace-popular')) {
+        deepLinkPath = 'marketplace-popular';
+    } else if (path.includes('/marketplace-recommendation')) {
+        deepLinkPath = 'marketplace-recommendation';
+    } else if (path.includes('/delivery')) {
+        deepLinkPath = 'delivery';
+    }
 
+    // Ссылки на магазины (фолбэк, если приложения нет)
+    const APPSTORE = 'https://apps.apple.com/kz/app/id1614398205';
+    const GOOGLEPLAY = 'https://play.google.com/store/apps/details?id=kz.trk.adk';
 
-        document.getElementById('openAppBtn').addEventListener('click', openApp);
+    const universalLink = deepLinkPath
+        ? `https://${host}/${deepLinkPath}`
+        : `https://${host}`;
 
-        window.onload = () => {
-            if (isAndroid) {
-                openApp();
-            } else if (isIOS && isInAppBrowser) {
-                // Сразу показываем подсказку
+    // Android intent с авто-фолбэком в Google Play: есть приложение —
+    // откроется оно, нет — система сама уведёт в стор (browser_fallback_url).
+    const intentBase = deepLinkPath ? `${host}/${deepLinkPath}` : host;
+    const intentUrl =
+        `intent://${intentBase}#Intent;scheme=https;package=kz.trk.adk;` +
+        `S.browser_fallback_url=${encodeURIComponent(GOOGLEPLAY)};end`;
+
+    const isInstagram = /Instagram/i.test(navigator.userAgent);
+    const isTelegram = /Telegram/i.test(navigator.userAgent);
+    const isInAppBrowser = isInstagram || isTelegram;
+
+    function openApp() {
+        if (isAndroid) {
+            // Открывает приложение, либо сам уходит в Google Play.
+            window.location.href = intentUrl;
+        } else if (isIOS) {
+            if (isInAppBrowser) {
+                // В in-app браузере (Instagram/Telegram) universal link не
+                // работает — просим открыть в Safari.
                 document.getElementById('safari-hint').style.display = 'block';
+            } else {
+                // Приложение установлено → universal link перехватил ссылку
+                // ещё до загрузки страницы. Раз мы здесь — приложения нет,
+                // уводим в App Store.
+                window.location.href = APPSTORE;
             }
-        };
+        }
+    }
+
+    document.getElementById('openAppBtn').addEventListener('click', openApp);
+
+    // Автозапуск: без кликов. Веб-страница — только бэкап.
+    window.onload = () => {
+        if (isAndroid) {
+            openApp();
+        } else if (isIOS) {
+            if (isInAppBrowser) {
+                document.getElementById('safari-hint').style.display = 'block';
+            } else {
+                // Небольшая задержка на случай перехвата universal link;
+                // если страница всё ещё открыта — приложения нет → App Store.
+                setTimeout(() => { window.location.href = APPSTORE; }, 400);
+            }
+        }
+    };
 
 
-    </script>
+</script>
 
 </body>
 

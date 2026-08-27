@@ -10,7 +10,8 @@
           { "/": "/marketplace-promotion/*" },
           { "/": "/marketplace-promo" },
           { "/": "/marketplace-popular" },
-          { "/": "/marketplace-recommendation" }
+          { "/": "/marketplace-recommendation" },
+          { "/": "/delivery" }
         ]
       }
     ]

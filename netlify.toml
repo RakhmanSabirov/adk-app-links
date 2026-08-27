@@ -42,6 +42,13 @@ to = "/marketplace-redirect.html"
 status = 200
 force = true
 
+# Вход в доставку (для рекламы): https://adk-app.netlify.app/delivery
+[[redirects]]
+from = "/delivery"
+to = "/marketplace-redirect.html"
+status = 200
+force = true
+
 # Обеспечиваем доступность .well-known файлов
 [[headers]]
 for = "/.well-known/*"
