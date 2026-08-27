@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ru">
 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +15,7 @@
             box-sizing: border-box;
         }
 
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -24,6 +26,7 @@
             padding: 20px;
         }
 
+
         .container {
             background: white;
             border-radius: 20px;
@@ -33,6 +36,7 @@
             text-align: center;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
+
 
         /* ЛОГО */
         .logo {
@@ -47,11 +51,13 @@
             background: white;
         }
 
+
         .logo img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
+
 
         h1 {
             font-size: 24px;
@@ -59,11 +65,13 @@
             color: #333;
         }
 
+
         p {
             color: #666;
             margin-bottom: 30px;
             line-height: 1.6;
         }
+
 
         .btn {
             display: inline-block;
@@ -81,16 +89,19 @@
             width: 100%;
         }
 
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
         }
+
 
         .stores {
             margin-top: 30px;
             padding-top: 30px;
             border-top: 1px solid #eee;
         }
+
 
         .stores h3 {
             font-size: 14px;
@@ -100,12 +111,14 @@
             letter-spacing: 1px;
         }
 
+
         .store-buttons {
             display: flex;
             gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
+
 
         .store-btn {
             flex: 1;
@@ -114,18 +127,23 @@
     </style>
 </head>
 
+
 <body>
 <div class="container">
+
 
     <!-- ЛОГО -->
     <div class="logo">
         <img src="/adk.png" alt="ADK Logo">
     </div>
 
+
     <h1>ADK Marketplace</h1>
     <p>Откройте приложение для покупок</p>
 
+
     <button class="btn" id="openAppBtn">Открыть приложение</button>
+
 
     <!-- Подсказка для iOS in-app браузера -->
     <div id="safari-hint"
@@ -133,6 +151,7 @@
         Нажмите <b>···</b> (три точки) вверху → <b>«Открыть в браузере»</b> → затем приложение откроется
         автоматически
     </div>
+
 
     <div class="stores">
         <h3>Нет приложения?</h3>
@@ -146,15 +165,18 @@
             </a>
         </div>
     </div>
-     </div>
+</div>
+
 
 <script>
     const path = window.location.pathname;
     const isAndroid = /android/i.test(navigator.userAgent);
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+
     let deepLinkPath = '';
     const host = 'adk-app.netlify.app';
+
 
     if (path.includes('/marketplace-product/')) {
         const id = path.split('/marketplace-product/')[1].split('/')[0].split('?')[0];
@@ -178,6 +200,7 @@
         deepLinkPath = 'delivery';
     }
 
+
     // Ссылки на магазины (фолбэк, если приложения нет).
     // ВАЖНО: для АВТО-редиректа (без клика) нужен https:// — iOS блокирует
     // авто-переход на itms-apps:// без жеста пользователя. https iOS пускает
@@ -185,9 +208,11 @@
     const APPSTORE = 'https://apps.apple.com/kz/app/id1614398205';
     const GOOGLEPLAY = 'https://play.google.com/store/apps/details?id=kz.trk.adk';
 
+
     const universalLink = deepLinkPath
         ? `https://${host}/${deepLinkPath}`
         : `https://${host}`;
+
 
     // Android intent с авто-фолбэком в Google Play: есть приложение —
     // откроется оно, нет — система сама уведёт в стор (browser_fallback_url).
@@ -196,9 +221,11 @@
         `intent://${intentBase}#Intent;scheme=https;package=kz.trk.adk;` +
         `S.browser_fallback_url=${encodeURIComponent(GOOGLEPLAY)};end`;
 
+
     const isInstagram = /Instagram/i.test(navigator.userAgent);
     const isTelegram = /Telegram/i.test(navigator.userAgent);
     const isInAppBrowser = isInstagram || isTelegram;
+
 
     function openApp() {
         if (isAndroid) {
@@ -218,46 +245,35 @@
         }
     }
 
+
     document.getElementById('openAppBtn').addEventListener('click', openApp);
 
-    // ВРЕМЕННАЯ ДИАГНОСТИКА — показывает, что телефон определил.
-    // Если редирект сработает, страница уйдёт и этот блок не успеешь увидеть.
-    // Если НЕ сработает — блок останется на экране, сделай скрин и пришли.
-    try {
-        var dbg = document.createElement('pre');
-        dbg.style.cssText =
- 'font-size:11px;text-align:left;white-space:pre-wrap;word-break:break-all;background:#111;color:#0f0;padding:10px;border-radius:8px;margin-top:16px;';
-        dbg.textContent =
-            'path=' + path + '\n' +
-            'deepLinkPath=' + deepLinkPath + '\n' +
-            'isIOS=' + isIOS + '  isAndroid=' + isAndroid + '\n' +
-            'inApp=' + isInAppBrowser + '\n' +
-            'APPSTORE=' + APPSTORE + '\n' +
-            'UA=' + navigator.userAgent;
-        document.querySelector('.container').appendChild(dbg);
-    } catch (e) {}
 
     // Автозапуск: без кликов и БЕЗ ожидания загрузки картинок.
-    // Даём 2 сек, чтобы диагностика успела отрисоваться, затем редирект.
+    // Скрипт стоит в конце body — DOM уже готов, редиректим сразу.
     (function autoRedirect() {
-        var target = null;
         if (isAndroid) {
-            target = intentUrl;
+            // Открывает приложение, либо browser_fallback_url уводит в Google Play.
+            window.location.href = intentUrl;
         } else if (isIOS) {
             if (isInAppBrowser) {
                 document.getElementById('safari-hint').style.display = 'block';
             } else {
-                target = APPSTORE;
+                // Приложение есть → universal link перехватил ссылку до
+                // загрузки страницы. Раз мы здесь — приложения нет → App Store.
+                window.location.href = APPSTORE;
             }
-        }
-        if (target) {
-            setTimeout(function () { window.location.href = target; }, 2000);
         }
     })();
 
 
+
+
 </script>
+
 
 </body>
 
+
 </html>
+
